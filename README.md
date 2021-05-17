@@ -35,6 +35,10 @@ If configured correctly the `New-PurviewClient`command will return a Client obje
 
 If the first attempt call fails because the token is expired (401) the client will attempt to reobtain a token and resubmit the request, if the retry call fails an exception is thrown.
 
+#### Example:
+`$client = New-PurviewClient -ClientID "00000000-0000-0000-0000-000000000000" -ClientSecret "0n3h3l!0f4s3cr37." -ApplicationID "00000000-0000-0000-0000-000000000000" -TenantID "00000000-0000-0000-0000-000000000000" -PurviewName "purviewCatalogName"
+`
+
 ## Commands
 This PowerShell module provides a command per grouping of HTTP method (aligned with recommended Powershell command prefixes), per each of the atlas endpoints:
 (Entity, Glossary, Lineage, Relationship, Types).
