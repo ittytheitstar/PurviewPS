@@ -1,3 +1,5 @@
+#region PurviewPSClasses
+
 Class Token
 {
     
@@ -151,6 +153,10 @@ Class Client
     }
 
 }
+
+#endregion
+
+
 
 function New-PurviewClient {
 
@@ -1524,7 +1530,6 @@ function Set-Glossary{
 
 #endregion
 
-
 #region Search API
 
 function Search-Attribute {
@@ -1564,11 +1569,69 @@ function Search-Attribute {
 }
 function Search-Basic {
 
-    Param()
+    Param(
+    
+    [String]$Classification,
 
-    Return "Placeholder, not implemented"
+    [bool]$ExcludeDeletedEntities=$false,
+
+    [int]$Limit,
+
+    [int]$Offset,
+
+    [String]$Query,
+
+    [String]$SortBy,
+
+    [Switch]$Ascending,
+
+    [Switch]$Descending,
+
+    [Parameter(Mandatory=$true)]
+    [String]$TypeName,
+
+    [Parameter(Mandatory=$true)]
+    [Client]$Client
+    
+    
+    )
+
+    $URI = "search/basic?typeName=$($TypeName)&query=$($Query)"
+
+    if($Classification){
+        $URI += "&classification=$($Classification)"
+    }
+
+    if($ExcludeDeletedEntities){
+        $URI += "&excludedDeletedEntities=$($ExcludeDeletedEntities)"
+    }
+
+    
+    if($Limit -AND $Limit -gt 0){
+        $URI += "&limit=$($Limit)"
+    }
+
+    if($Offset -AND $Offset -gt 0){
+        $URI += "&offset=$($Offset)"
+    }
+
+    if($SortBy){
+        $URI += "&sortBy=$($SortBy)"
+    }
+
+    if($Descending){
+        $URI += "&sortOrder=DESCENDING"
+    }
+
+    if($Ascending){
+        $URI += "&sortOrder=ASCENDING"
+    }
+
+
+    $client.MakeRequest($URI, $false, $client.Get, "v2")
 
 }
+
 function Search-DSL {
 
 
@@ -1620,5 +1683,5 @@ function Search-Save{
 
 #endregion
 
-Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity, Search-Attribute
+Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity, Search-Attribute, Search-Basic
 
