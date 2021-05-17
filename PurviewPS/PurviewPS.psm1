@@ -156,7 +156,52 @@ Class Client
 
 #endregion
 
+#region AtlasClasses
 
+class AttributeSearchResult{
+    #Todo: Implement
+}
+
+class AttributeEntityHeader{
+    #Todo: Implement
+
+    AttributeEntityHeader(){}
+}
+
+class AtlasFullTextResult{
+    #Todo: Implement
+}
+
+class AtlasQueryType{
+    #Todo: Implement
+}
+
+
+class AtlasSearchResult {
+
+    [Int]$approximateCount
+    
+    [AttributeSearchResult]$attributes
+  
+    [String]$classification
+
+    [AttributeEntityHeader[]]$entities
+
+    [AtlasFullTextResult[]]$fullTextResult
+
+    [String]$queryText
+
+    [AtlasQueryType]$queryType
+
+    [System.Collections.Generic.Dictionary[[String],[AttributeEntityHeader]]]$referredEntities
+
+    
+
+}
+
+
+
+#endregion
 
 function New-PurviewClient {
 
@@ -1631,7 +1676,6 @@ function Search-Basic {
     $client.MakeRequest($URI, $false, $client.Get, "v2")
 
 }
-
 function Search-DSL {
 
 
