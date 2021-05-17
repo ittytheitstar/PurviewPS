@@ -1727,5 +1727,5 @@ function Search-Save{
 
 #endregion
 
-Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity, Search-Attribute, Search-Basic
+Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity
 
