@@ -538,27 +538,6 @@ class SearchRequest {
 
 }
 
-class AtlasSearchResult {
-
-    [Int]$approximateCount
-    
-    [AttributeSearchResult]$attributes
-  
-    [String]$classification
-
-    [AttributeEntityHeader[]]$entities
-
-    [AtlasFullTextResult[]]$fullTextResult
-
-    [String]$queryText
-
-    [AtlasQueryType]$queryType
-
-    [System.Collections.Generic.Dictionary[[String],[AttributeEntityHeader]]]$referredEntities   #map<string, AttributeEntityHeader>>
-
-    
-
-}
 
 class AtlasGlossaryCategory : AtlasGlossaryBaseObject{
 
@@ -999,9 +978,9 @@ class contactSearchResultValue{
 
 class AdvancedSearchResult{
 
-    [int32]$searchCount
+    [int32]${@search.Count}
 
-    [SearchFacetResultValue]$searchFacets
+    [SearchFacetResultValue]${@search.Facets}
 
     [SearchResultValue[]]$value
 
@@ -1029,8 +1008,8 @@ class SearchFacetItemValue{
 class SearchResultValue{
 
 
-    [Float]$searchScore
-    [SearchHighlights]$searchHighlights
+    [Float]${@search.Score}
+    [SearchHighlights]${@search.highlights}
     [String]$searchText
     [String]$description
     [String]$id
