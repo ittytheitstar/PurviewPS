@@ -158,15 +158,7 @@ Class Client
 
 #region AtlasClasses
 
-class AttributeSearchResult{
-    #Todo: Implement
-}
 
-class AttributeEntityHeader{
-    #Todo: Implement
-
-    AttributeEntityHeader(){}
-}
 
 class AtlasAttributeDef{
 
@@ -854,6 +846,334 @@ class ClassificationAssociateRequest{
     [String[]]$entityGuids 
 
 }
+
+class EntityAuditActionV2{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class EntityAuditEventV2{
+
+    [string]$action
+    [string]$details
+    [AtlasEntity]$entity
+    [string]$entityId
+    [string]$eventKey
+    [int]$timeStamp
+    [EntityAuditType]$type
+    [string]$user
+   
+
+}
+
+class EntityAuditType{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class EntityMutationResponse{
+
+    [Object]$guidAssignments
+    [Object]$mutatedEntities
+    [AtlasEntityHeader[]]$partialUpdatedEntities
+
+}
+
+
+class EntityOperation{
+
+    #NOT REQUIRED AS string ENUM
+
+}
+
+class TermGuid{
+
+    ##Standalone string ?? The globally unique identifier for glossary term.
+
+}
+
+class Relation{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class SearchFilter{
+    [bool]$getCount
+    [int]$maxRows
+    [object]$params
+    [string]$sortBy
+    [string]$sortType
+    [int]$startIndex
+}
+
+class TimeZone{
+    [int]$DSTSavings
+    [String]$ID
+    [String[]]$availableIDs
+    [TimeZone]$default
+    [String]$displayName
+    [int]$rawOffset
+}
+
+class AzureCatalogUser{
+    [String]$userId
+}
+
+class CatalogCreationRequest{
+
+    [String]$catalogName
+    [String]$catalogId
+    [String]$creatorUserId
+    [String]$eventHubConnectionString
+}
+
+class CatalogDeletionRequest{
+
+    [String]$catalogName
+
+}
+
+class DataScanPermissionCheckRequest{
+
+    [String]$catalogName
+    [String]$userId
+
+}
+
+class DataScanPermissionCheckResponse{
+    [String]$result
+
+}
+
+
+class SuggestResult{
+    [SuggestResultValue[]]$value
+}
+
+class SuggestResultValue{
+
+    [Float]$searchScore
+    [String]$searchText
+    [String]$description
+    [String]$id
+    [String]$name
+    [String]$owner
+    [String]$qualifiedName
+    [String]$entityType
+    [String[]]$classification
+    [String[]]$label
+    [termSearchResultValue[]]$term
+    [contactSearchResultValue[]]$contact
+    [String[]]$assetType
+
+}
+
+class termSearchResultValue{
+    [String]$name
+    [String]$glossaryName
+}
+
+class contactSearchResultValue{
+    
+    [String]$id
+    [String]$info
+    [String]$contactType
+
+}
+
+class AdvancedSearchResult{
+
+    [int32]$searchCount
+
+    [SearchFacetResultValue]$searchFacets
+
+    [SearchResultValue[]]$value
+
+}
+
+class SearchFacetResultValue{
+
+    [SearchFacetItemValue []]$assetType
+    [SearchFacetItemValue []]$classification
+    [SearchFacetItemValue []]$classificationCategory
+    [SearchFacetItemValue []]$contactId
+    [SearchFacetItemValue []]$fileExtension
+    [SearchFacetItemValue []]$label
+    [SearchFacetItemValue []]$term
+    
+
+}
+
+class SearchFacetItemValue{
+    [int]$count
+    [String]$value
+
+}
+
+class SearchResultValue{
+
+
+    [Float]$searchScore
+    [SearchHighlights]$searchHighlights
+    [String]$searchText
+    [String]$description
+    [String]$id
+    [String]$name
+    [String]$owner
+    [String]$qualifiedName
+    [String]$entityType
+    [String[]]$classification
+    [String[]]$label
+    [termSearchResultValue[]]$term
+    [contactSearchResultValue[]]$contact
+    [String[]]$assetType
+
+}
+
+class SearchHighlights{
+
+    [String[]]$id
+    [String[]]$qualifiedName
+    [String[]]$name
+    [String[]]$description
+    [String[]]$entityType
+
+}
+
+class AutocompleteResult{
+
+[AutocompleteResultValue[]]$value
+
+}
+
+class AutocompleteResultValue{
+
+    [String]$text
+    [String]$queryPlusText
+
+}
+
+class Context{
+
+    [String]$value
+
+}
+
+class Error{
+
+    [String]$errorMessage
+}
+
+class AtlasError {
+
+    [String]$errorCode
+    [String]$errorMessage
+
+}
+
+class HookNotificationType{
+
+    #NOT USED, STRING ENUM
+
+}
+
+class HookNotification{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+
+}
+
+class EntityCreateRequestV2{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasEntitiesWithExtInfo]$entities
+
+}
+
+class EntityUpdateRequestV2{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasEntitiesWithExtInfo]$entities
+
+
+}
+
+class EntityPartialUpdateRequestV2{
+
+  [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasObjectId]$entityId
+    [AtlasEntitiesWithExtInfo]$entities
+
+}
+
+class EntityDeleteRequestV2{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasObjectId []]$entities
+
+}
+
+class RoleAssignmentEntry {
+
+    [String]$principalId
+    [String]$role
+
+}
+
+class UpdateRoleAssignmentRequest{
+
+    [RoleAssignmentEntry[]]$roleAssignmentList
+
+}
+
+class ListRoleAssignmentResponse{
+
+    [RoleAssignmentEntry[]]$roleAssignmentList
+
+}
+
+
+class ImportCSVOperation{
+
+
+    [String]$id
+    [String]$status
+    [int]$createTime
+    [int]$lastUpdateTime
+    [ImportCSVOperationProperties]$properties
+    [ImportCSVOperationError]$error
+
+}
+
+class ImportCSVOperationProperties{
+
+    [int]$importedTerms
+    [int]$totalTermsDetect
+
+}
+
+class ImportCSVOperationError{
+
+    [int]$errorCode
+    [String]$errorMessage
+
+}
+
+class ImportCSVOperationStatus{
+
+#NOT NEEDED STRING ENUM
+
+}
+
+class LastModifiedTS{}
 
 #endregion
 
