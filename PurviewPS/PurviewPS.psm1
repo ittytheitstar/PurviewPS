@@ -168,6 +168,348 @@ class AttributeEntityHeader{
     AttributeEntityHeader(){}
 }
 
+class AtlasAttributeDef{
+
+    [String]$cardinality
+    [AtlasConstraintDef[]]$constraints
+    [String]$defaultValue
+    [String]$description
+    [bool]$includeInNotification
+    [bool]$isIndexable
+    [bool]$isOptional
+    [bool]$isUnique
+    [String]$name
+    [Object]$options
+    [String]$typename
+    [int]$valuesMaxCount
+    [int]$valuesMinCount
+
+}
+
+class AtlasBaseModelObject{
+
+    [String]$guid
+
+}
+
+class AtlasBaseTypeDef{
+
+    [String]$category
+    [int]$createTime
+    [String]$createdBy
+    [DateFormat]$dateFormatter
+    [String]$description
+    [String]$guid
+    [String]$name
+    [Object]$options
+    [String]$serviceType
+    [String]$typeVersion
+    [int]$updateTime
+    [String]$updatedBy
+    [int]$version
+    [String]$lastModifiedTS
+}
+
+class LastModifiedTS{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class TypeCategory{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class TermTemplateDef : AtlasStructDef {
+
+    #JSON Wrapper of AtlasStructDef
+
+}
+
+class AtlasEntityDef : AtlasStructDef {
+
+    [String[]]$subTypes
+    [String[]]$superTypes
+
+
+}
+
+class Cardinality{
+  # Not Required, this is a String Enum
+}
+
+class AtlasStruct{
+
+    [Object]$attributes
+    [String]$typeName
+    [String]$lastModifiedTS
+
+}
+
+class Status{
+    
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasEntityHeader : AtlasStruct{
+
+    [String[]]$classificationNames
+    [AtlasClassification[]]$classifications
+    [String]$displayText
+    [String]$guid
+    [String[]]$meaningNames
+    [AtlasTermAssignmentHeader[]]$meanings
+    [String]$status
+}
+
+class AtlasEntityHeaders {
+
+    [Object]$guidHeaderMap
+
+}
+
+class AtlasClassification : AtlasStruct{
+
+    [String]$entityGuid
+    [String]$entityStatus
+    [bool]$propagate
+    [bool]$removePropagationsOnEntityDelete
+    [TimeBoundary[]]$validityPeriods
+    [String]$source
+    [Object]$sourceDetails
+
+}
+
+class AtlasStructDef : AtlasBaseTypeDef{
+
+    [AtlasAttributeDef[]]$attributeDefs    
+
+}
+
+class AtlasClassificationDef : AtlasStructDef{
+
+    [String[]]$entityTypes
+    [String[]]$subTypes
+    [String[]]$superTypes
+
+}
+
+class AtlasEntityExtInfo{
+
+    [Object]$referredEntities
+
+}
+
+class AtlasEntity : AtlasStruct {
+
+    [AtlasClassifications]$classifications
+    [int]$createTime
+    [String]$createdBy
+    [String]$guid
+    [String]$homeId
+    [AtlasTermAssignmentHeader[]]$meanings
+    [int]$provenanceType
+    [bool]$proxy
+    [Object]$relationshipAttributes
+    [String]$status
+    [int]$updateTime
+    [int]$updatedBy
+    [int]$version
+    [String]$source
+    [Object]$sourceDetails
+    [Object]$contacts
+
+}
+
+class AtlasEnumDef : AtlasBaseTypeDef{
+
+    [String]$defaultValue
+    [AtlasEnumElementDef[]]$elementDefs
+
+
+}
+
+class AtlasEnumElementDef{
+
+    [String]$description
+    [int]$ordinal
+    [String]$value
+
+}
+
+class AtlasEntityWithExtInfo : AtlasEntityExtInfo{
+
+    [AtlasEntity]$entity
+
+}
+
+class AtlasTermAssignmentStatus{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasTermAssignmentHeader{
+
+    [int]$confidence
+    [String]$createdBy
+    [String]$description
+    [String]$displayText
+    [String]$expression
+    [String]$relationGuid
+    [String]$source
+    [String]$status
+    [String]$steward
+    [String]$termGuid
+    
+
+}
+
+class AtlasGlossaryBaseObject : AtlasBaseModelObject{
+
+    [AtlasClassification[]]$classifications
+    [String]$longDescription
+    [String]$name
+    [String]$qualifiedName
+    [String]$shortDescription
+    [String]$lastModifiedTS
+
+}
+
+class AtlasGlossary : AtlasGlossaryBaseObject{
+
+ [AtlasRelatedCategoryHeader]$categories
+ [String]$language
+ [AtlasRelatedTermHeader[]]$terms
+ [String]$usage
+
+}
+
+class AtlasRelatedCategoryHeader{
+
+    [String]$categoryGuid
+    [String]$description
+    [String]$displayText
+    [String]$parentCategoryGuid
+    [String]$relationGuid
+
+}
+
+class AtlasTermRelationshipStatus{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelatedTermHeader{
+
+    [String]$description
+    [String]$displayText
+    [String]$expression
+    [String]$relationGuid
+    [String]$source
+    [String]$status
+    [String]$steward
+    [String]$termGuid
+
+}
+
+class AtlasEntitiesWithExtInfo : AtlasEntityExtInfo{
+
+    [AtlasEntity[]]$entities
+
+}
+
+class TimeBoundary{
+
+    [String]$endTime
+    [String]$startTime
+    [String]$timeZone
+
+}
+
+class AtlasClassifications : PList {
+
+    #JSON WRAPPER FOR PList, MAT NOT BE REQUIRED
+
+}
+
+class SortType {
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class PList{
+
+    [Object[]]$list
+    [int]$pageSize
+    [String]$sortBy
+    [String]$sortType
+    [int64]$startIndex
+    [int64]$totalCount
+}
+
+class DateFormat{
+
+    [String[]]$availableLocales
+    [DateFormat]$dateInstance
+    [DateFormat]$dateTimeInstance
+    [DateFormat]$instance
+    [bool]$lenient
+    [NumberFormat]$numberFormat
+    [DateFormat]$timeInstance
+    [AtlasTimeZone]$timeZone
+
+}
+
+class AtlasTimeZone{
+
+    [int]$DSTSavings
+    [String]$ID
+    [String[]]$availableIDs
+    [AtlasTimeZone]$default
+    [String]$displayName
+    [int]$rawOffset
+
+}
+
+class NumberFormat{
+
+    [string[]]$availableLocales
+    [string]$currency
+    [NumberFormat]$currencyInstance
+    [bool]$groupingUsed
+    [NumberFormat]$instance
+    [NumberFormat]$integerInstance
+    [int]$maximumFractionDigits
+    [int]$maximumIntegerDigits
+    [int]$minimumFractionDigits
+    [int]$minimumIntegerDigits
+    [NumberFormat]$numberInstance
+    [bool]$parseIntegerOnly
+    [NumberFormat]$percentInstance
+    [String]$roundingMode
+
+
+}
+
+class RoundingMode{
+    
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasConstraintDef{
+
+    [Object]$params
+    [String]$type
+
+}
+
 class AtlasFullTextResult{
     #Todo: Implement
 }
@@ -176,6 +518,22 @@ class AtlasQueryType{
     #Todo: Implement
 }
 
+class SuggestRequest{
+
+    [String]$keywords
+    [int]$Limit
+    [Object]$Filter
+
+}
+
+class SearchRequest {
+
+      [String]$keywords
+      [int]$Offset
+      [int]$Limit
+      [Object]$Filter
+
+}
 
 class AtlasSearchResult {
 
@@ -193,15 +551,313 @@ class AtlasSearchResult {
 
     [AtlasQueryType]$queryType
 
-    [System.Collections.Generic.Dictionary[[String],[AttributeEntityHeader]]]$referredEntities
+    [System.Collections.Generic.Dictionary[[String],[AttributeEntityHeader]]]$referredEntities   #map<string, AttributeEntityHeader>>
 
     
 
 }
 
+class AtlasGlossaryCategory : AtlasGlossaryBaseObject{
 
+    [AtlasGlossaryHeader]$anchor
+    [AtlasRelatedCategoryHeader[]]$childrenCategories
+    [AtlasRelatedCategoryHeader]$parentCategory
+    [AtlasRelatedTermHeader[]]$terms
+
+}
+
+class AtlasGlossaryHeader{
+
+    [String]$displayText
+    [String]$glossaryGuid
+    [String]$relationGuid
+
+}
+
+class AtlasGlossaryExtInfo : AtlasGlossary{
+
+    [Object]$categoryInfo
+    [Object]$termInfo
+
+}
+
+class TermStatus{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasGlossaryTerm{
+
+    [String]$abbreviation
+    [AtlasGlossaryHeader]$anchor
+    [AtlasRelatedTermHeader[]]$antonyms
+    [int]$createTime
+    [String]$createdBy
+    [int]$updateTime
+    [String]$updatedBy
+    [String]$status
+    [ResourceLink []]$resources
+    [Object]$contacts
+    [System.Collections.Generic.Dictionary[[String], [System.Collections.Generic.Dictionary[[String],[Object]]] ]]$attributes    #map<string,map<string,object>>
+    [AtlasRelatedObjectId[]]$assignedEntities
+    [AtlasTermCategorizationHeader]$categories
+    [AtlasRelatedTermHeader ]$classifies
+    [String[]]$examples
+    [AtlasRelatedTermHeader[]]$isA
+    [AtlasRelatedTermHeader[]]$preferredTerms
+    [AtlasRelatedTermHeader[]]$preferredToTerms
+    [AtlasRelatedTermHeader[]]$replacedBy
+    [AtlasRelatedTermHeader[]]$replacementTerms
+    [AtlasRelatedTermHeader[]]$seeAlso
+    [AtlasRelatedTermHeader[]]$synonyms
+    [AtlasRelatedTermHeader[]]$translatedTerms
+    [AtlasRelatedTermHeader[]]$translationTerms
+    [String]$usage
+    [AtlasRelatedTermHeader[]]$validValues
+    [AtlasRelatedTermHeader[]]$validValuesFor
+    
+    
+}
+
+class AtlasTermCategorizationHeader{
+
+    [String]$categoryGuid
+    [String]$description
+    [String]$displayText
+    [String]$relationGuid
+    [String]$status
+
+}
+
+class Status_AtlasRelationship{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelatedObjectId : AtlasObjectId{
+
+    [String]$displayText
+    [String]$entityStatus
+    [AtlasStruct]$relationshipAttributes
+    [String]$relationshipGuid
+    [String]$relationshipStatus
+
+}
+
+class AtlasObjectId{
+
+    [String]$guid
+    [String]$typeName
+    [Object]$uniqueAttributes
+
+}
+
+class ResourceLink {
+
+    [String]$displayName
+    [String]$url
+
+}
+
+class ContactBasic{
+
+    [String]$id
+    [String]$info
+
+}
+
+class AtlasLineageInfo{
+
+    [String]$baseEntityGuid
+    [Object]$guidEntityMap
+    [Object]$widthCounts
+    [int]$lineageDepth
+    [int]$lineageWidth
+    [bool]$includeParent
+    [int]$childrenCount
+    [String]$lineageDirection
+    [ParentRelation[]]$parentRelations
+    [LineageRelation[]]$relations
+
+}
+
+class LineageRelation{
+
+    [String]$fromEntityId
+    [String]$relationshipId
+    [String]$toEntityId
+
+}
+
+class ParentRelation{
+
+    [String]$childEntityId
+    [String]$relationshipId
+    [String]$parentEntityId
+
+}
+
+class LineageDirection{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelationship : AtlasStruct {
+
+    [AtlasClassification[]]$blockedPropagatedClassifications
+    [int]$createTime
+    [String]$createdBy
+    [AtlasObjectID]$end1
+    [AtlasObjectID]$end2
+    [String]$guid
+    [String]$homeId
+    [String]$label
+    [String]$propagateTags
+    [AtlasClassification[]]$propagatedClassifications
+    [int]$provenanceType
+    [String]$status
+    [int]$updateTime
+    [String]$updatedBy
+    [int]$version
+
+}
+
+class PropagateTags{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelationshipDef : AtlasStructDef{
+
+    [AtlasRelationshipEndDef]$endDef1
+    [AtlasRelationshipEndDef]$endDef2
+    [PropagateTags]$propagateTags
+    [String]$relationshipCategory
+    [String]$relationshipLabel
+
+}
+
+class AtlasRelationshipEndDef{
+
+    [String]$cardinality
+    [String]$description
+    [bool]$isContainer
+    [bool]$isLegacyAttribute
+    [String]$name
+    [String]$type
+
+}
+
+class RelationshipCategory{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelationshipWithExtInfo{
+
+    [Object]$referredEntities
+    [AtlasRelationship]$relationship
+
+}
+
+class AtlasTypeDefHeader {
+
+    [String]$category
+    [String]$guid
+    [String]$name
+
+}
+
+class AtlasTypesDef{
+
+    [AtlasClassificationDef []]$classificationDefs
+    [AtlasEntityDef []]$entityDefs
+    [AtlasEnumDef []]$enumDefs
+    [AtlasRelationshipDef []]$relationshipDefs
+    [AtlasStructDef []]$structDefs
+
+}
+
+class TypeStatistics{
+
+    [Object]$typeStatistics
+
+}
+
+class AtlasUserSavedSearch{
+
+    [String]$name
+    [String]$ownerName
+    [SearchParameters]$searchParameters
+    [String]$searchType
+    [String]$uiParameters
+
+}
+
+class SavedSearchType{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class SearchParameters{
+
+    [string[]]$attributes
+    [string]$classification
+    [FilterCriteria]$entityFilters
+    [bool]$excludeDeletedEntities
+    [bool]$includeClassificationAttributes
+    [bool]$includeSubClassifications
+    [bool]$includeSubTypes
+    [int]$limit
+    [int]$offset
+    [String]$query
+    [FilterCriteria]$tagFilters
+    [string]$termName
+    [string]$typeName
+
+}
+
+class FilterCriteria{
+
+    [string]$attributeName
+    [string]$attributeValue
+    [String]$condition
+    [FilterCriteria]$criterion
+    [String]$operator
+
+
+}
+
+class Condition{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+class Operator{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+class Format{  
+    #NOT REQUIRED AS STRING ENUM
+}
+
+class ClassificationAssociateRequest{
+
+    [AtlasClassification]$classification
+    [String[]]$entityGuids 
+
+}
 
 #endregion
+
+
 
 function New-PurviewClient {
 
