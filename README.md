@@ -107,8 +107,8 @@ Supporting all the API URI's available for api/atlas/v2/glossary/* for the GET D
 Support all api/atlas/v2/search/* API
 
 To Do:
-Implement discovery commands
-Replicate all atlas objects as Powershell Classes
-Refactor commands to use proper atlas classes
-Test Everything
-Create documentation for command parameter usage
+- Implement discovery commands
+- Replicate all atlas objects as Powershell Classes
+- Refactor commands to use proper atlas classes
+- Test Everything
+- Create documentation for command parameter usage
