@@ -97,7 +97,7 @@ Class Client
 
     }
 
-    [Object] MakeRequest([String]$Resource, [object]$Payload, $Method, [String]$Version){
+    [Object] MakeRequest([String]$Resource, [string]$JsonPayload, $Method, [String]$Version){
 
         $URL = "https://$($this.PurviewName).catalog.purview.azure.com/api/atlas/$($Version)/$($Resource)"
         $headers = $this.CreateRequestHeaders()
@@ -105,8 +105,8 @@ Class Client
 
         
         #First attemp at web request
-        if($Payload ){
-            $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue -Body ConvertTo-Json($Payload)
+        if($JsonPayload ){
+            $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue -Body $JsonPayload
         }else{
             $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue
         }
@@ -126,8 +126,8 @@ Class Client
                 if($errorObject.error.message == "Token expired"){
                     $this.FetchToken()
                     $RestErrorRetry = $false
-                    if($Payload ){
-                        $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue -Body ConvertTo-Json($Payload)
+                    if($JsonPayload ){
+                        $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue -Body ConvertTo-Json($JsonPayload)
                     }else{
                         $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue
                     }
@@ -158,7 +158,38 @@ Class Client
 
 #region AtlasClasses
 
+#My addition to clean up search params
 
+class AtlasBaseTypeDef{
+
+    [String]$category
+    [int]$createTime
+    [String]$createdBy
+    [DateFormat]$dateFormatter
+    [String]$description
+    [String]$guid
+    [String]$name
+    [Object]$options
+    [String]$serviceType
+    [String]$typeVersion
+    [int]$updateTime
+    [String]$updatedBy
+    [int]$version
+    [String]$lastModifiedTS
+}
+
+class AtlasStructDef : AtlasBaseTypeDef{
+
+    [AtlasAttributeDef[]]$attributeDefs    
+
+}
+
+
+class AutoCompleteRequest{
+
+    [String]$keyword
+    [int]$limit
+}
 
 class AtlasAttributeDef{
 
@@ -182,24 +213,6 @@ class AtlasBaseModelObject{
 
     [String]$guid
 
-}
-
-class AtlasBaseTypeDef{
-
-    [String]$category
-    [int]$createTime
-    [String]$createdBy
-    [DateFormat]$dateFormatter
-    [String]$description
-    [String]$guid
-    [String]$name
-    [Object]$options
-    [String]$serviceType
-    [String]$typeVersion
-    [int]$updateTime
-    [String]$updatedBy
-    [int]$version
-    [String]$lastModifiedTS
 }
 
 class LastModifiedTS{
@@ -275,11 +288,7 @@ class AtlasClassification : AtlasStruct{
 
 }
 
-class AtlasStructDef : AtlasBaseTypeDef{
 
-    [AtlasAttributeDef[]]$attributeDefs    
-
-}
 
 class AtlasClassificationDef : AtlasStructDef{
 
@@ -423,6 +432,16 @@ class TimeBoundary{
 
 }
 
+class PList{
+
+    [Object[]]$list
+    [int]$pageSize
+    [String]$sortBy
+    [String]$sortType
+    [int64]$startIndex
+    [int64]$totalCount
+}
+
 class AtlasClassifications : PList {
 
     #JSON WRAPPER FOR PList, MAT NOT BE REQUIRED
@@ -435,15 +454,7 @@ class SortType {
 
 }
 
-class PList{
 
-    [Object[]]$list
-    [int]$pageSize
-    [String]$sortBy
-    [String]$sortType
-    [int64]$startIndex
-    [int64]$totalCount
-}
 
 class DateFormat{
 
@@ -628,6 +639,14 @@ class Status_AtlasRelationship{
 
 }
 
+class AtlasObjectId{
+
+    [String]$guid
+    [String]$typeName
+    [Object]$uniqueAttributes
+
+}
+
 class AtlasRelatedObjectId : AtlasObjectId{
 
     [String]$displayText
@@ -638,13 +657,7 @@ class AtlasRelatedObjectId : AtlasObjectId{
 
 }
 
-class AtlasObjectId{
 
-    [String]$guid
-    [String]$typeName
-    [Object]$uniqueAttributes
-
-}
 
 class ResourceLink {
 
@@ -1173,7 +1186,6 @@ class ImportCSVOperationStatus{
 
 }
 
-class LastModifiedTS{}
 
 #endregion
 
@@ -2516,6 +2528,8 @@ function Set-Glossary{
     
     )
 
+    $FunctionType = $PSCmdlet.ParameterSetName
+
     Switch ($FunctionType)
         {
             "Glossary" {
@@ -2553,6 +2567,8 @@ function Set-Glossary{
 
 #region Search API
 
+
+##ATLAS FUNCTION NOT SUPPORTED IN PURVIEW
 function Search-Attribute {
 
     Param(
@@ -2588,6 +2604,8 @@ function Search-Attribute {
     $client.MakeRequest("search/attribute?", $false, $client.Get , "v2")
 
 }
+
+##ATLAS FUNCTION NOT SUPPORTED IN PURVIEW
 function Search-Basic {
 
     Param(
@@ -2652,56 +2670,50 @@ function Search-Basic {
     $client.MakeRequest($URI, $false, $client.Get, "v2")
 
 }
-function Search-DSL {
 
 
-    Param()
-
-    Return "Placeholder, not implemented"
-
-}
-function Search-FullText {
+function New-Search{
 
 
-    Param()
+    Param(
+    
+        [parameter(ParameterSetName = "SearchRequest")]
+        [SearchRequest]$SearchRequest,
 
-    Return "Placeholder, not implemented"
-
-}
-function Search-Quick {
-
-
-    Param()
-
-    Return "Placeholder, not implemented"
-
-}
-function Search-Relationship {
+        [parameter(ParameterSetName = "SuggestRequest")]
+        [SuggestRequest]$SuggestRequest,
 
 
-    Param()
+        [parameter(ParameterSetName = "AutoCompleteRequest")]
+        [AutoCompleteRequest]$AutoCompleteRequest,
 
-    Return "Placeholder, not implemented"
+        [parameter(ParameterSetName = "SearchRequest",Mandatory=$true)]
+        [parameter(ParameterSetName = "SuggestRequest",Mandatory=$true)]
+        [parameter(ParameterSetName = "AutoCompleteRequest",Mandatory=$true)]
+        [Client]$Client
+    
+    )
 
-}
-function Search-Suggestion {
+      $FunctionType = $PSCmdlet.ParameterSetName
 
+      switch($FunctionType){
 
-    Param()
+      "SearchRequest"{
+      
+            $response = $Client.MakeRequest("search/advanced", (ConvertTo-Json $SearchRequest) , $Client.POST, "v2")
+            $result = [AdvancedSearchResult] ($response | ConvertFrom-Json)
 
-    Return "Placeholder, not implemented"
+      }
+      "SuggestRequest"{}
+      "AutoCompleteRequest"{}
 
-}
-function Search-Save{
+      }
 
-
-    Param()
-
-    Return "Placeholder, not implemented"
+    Return $result
 
 }
 
 #endregion
 
-Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity
+Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity, New-Search
 
