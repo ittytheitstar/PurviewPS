@@ -105,7 +105,7 @@ Class Client
 
         
         #First attemp at web request
-        if($JsonPayload ){
+        if($JsonPayload -ne $false ){
             $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue -Body $JsonPayload
         }else{
             $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue
@@ -126,7 +126,7 @@ Class Client
                 if($errorObject.error.message == "Token expired"){
                     $this.FetchToken()
                     $RestErrorRetry = $false
-                    if($JsonPayload ){
+                    if( $JsonPayload -ne $false  ){
                         $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue -Body ConvertTo-Json($JsonPayload)
                     }else{
                         $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue
@@ -947,8 +947,8 @@ class SuggestResult{
 
 class SuggestResultValue{
 
-    [Float]$searchScore
-    [String]$searchText
+    [Float]${@search.Score}
+    [String]${@search.Text}
     [String]$description
     [String]$id
     [String]$name
@@ -2544,7 +2544,7 @@ function Set-Glossary{
 
 #endregion
 
-#region Search API
+#region Search/Discovery API
 
 
 ##ATLAS FUNCTION NOT SUPPORTED IN PURVIEW
@@ -2677,14 +2677,39 @@ function New-Search{
 
       switch($FunctionType){
 
-      "SearchRequest"{
+          "SearchRequest"{
       
-            $response = $Client.MakeRequest("search/advanced", (ConvertTo-Json $SearchRequest) , $Client.POST, "v2")
-            $result = [AdvancedSearchResult]$response 
+                $response = $Client.MakeRequest("search/advanced", (ConvertTo-Json $SearchRequest) , $Client.POST, "v2")
+                $result = [AdvancedSearchResult]$response 
 
-      }
-      "SuggestRequest"{}
-      "AutoCompleteRequest"{}
+          }
+          "SuggestRequest"{
+      
+        
+                $response = $Client.MakeRequest("search/suggest", (ConvertTo-Json $SuggestRequest) , $Client.POST, "v2")
+                $result = [SuggestResult]$response
+      
+          }
+          "AutoCompleteRequest"{
+      
+            $URI = "search/autocomplete?"
+            if($AutoCompleteRequest){
+
+                if($AutoCompleteRequest.keyword){
+                    $URI +=  "&keyword='$($AutoCompleteRequest.keyword)'"
+                }else{
+                    throw "AutoComplete Keyword is required."
+                }
+
+                if($AutoCompleteRequest.limit -gt 0){
+                    $URI +=  "&limit=$($AutoCompleteRequest.limit)"
+                }
+
+            }
+
+            $response = $Client.MakeRequest($URI, $false , $Client.GET, "v2")
+            $result = [AutocompleteResult]$response
+          }
 
       }
 
