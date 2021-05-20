@@ -1,3 +1,5 @@
+#region PurviewPSClasses
+
 Class Token
 {
     
@@ -95,7 +97,7 @@ Class Client
 
     }
 
-    [Object] MakeRequest([String]$Resource, [object]$Payload, $Method, [String]$Version){
+    [Object] MakeRequest([String]$Resource, [string]$JsonPayload, $Method, [String]$Version){
 
         $URL = "https://$($this.PurviewName).catalog.purview.azure.com/api/atlas/$($Version)/$($Resource)"
         $headers = $this.CreateRequestHeaders()
@@ -103,8 +105,8 @@ Class Client
 
         
         #First attemp at web request
-        if($Payload ){
-            $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue -Body ConvertTo-Json($Payload)
+        if($JsonPayload -ne $false ){
+            $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue -Body $JsonPayload
         }else{
             $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestError -ErrorAction SilentlyContinue
         }
@@ -124,8 +126,8 @@ Class Client
                 if($errorObject.error.message == "Token expired"){
                     $this.FetchToken()
                     $RestErrorRetry = $false
-                    if($Payload ){
-                        $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue -Body ConvertTo-Json($Payload)
+                    if( $JsonPayload -ne $false  ){
+                        $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue -Body ConvertTo-Json($JsonPayload)
                     }else{
                         $response = Invoke-RestMethod -URI $URL -Method $Method -Headers $headers -ErrorVariable RestErrorRetry -ErrorAction SilentlyContinue
                     }
@@ -151,6 +153,1022 @@ Class Client
     }
 
 }
+
+#endregion
+
+#region AtlasClasses
+
+#My addition to clean up search params
+
+class AtlasBaseTypeDef{
+
+    [String]$category
+    [int]$createTime
+    [String]$createdBy
+    [DateFormat]$dateFormatter
+    [String]$description
+    [String]$guid
+    [String]$name
+    [Object]$options
+    [String]$serviceType
+    [String]$typeVersion
+    [int]$updateTime
+    [String]$updatedBy
+    [int]$version
+    [String]$lastModifiedTS
+}
+
+class AtlasStructDef : AtlasBaseTypeDef{
+
+    [AtlasAttributeDef[]]$attributeDefs    
+
+}
+
+
+class AutoCompleteRequest{
+
+    [String]$keyword
+    [int]$limit
+}
+
+class AtlasAttributeDef{
+
+    [String]$cardinality
+    [AtlasConstraintDef[]]$constraints
+    [String]$defaultValue
+    [String]$description
+    [bool]$includeInNotification
+    [bool]$isIndexable
+    [bool]$isOptional
+    [bool]$isUnique
+    [String]$name
+    [Object]$options
+    [String]$typename
+    [int]$valuesMaxCount
+    [int]$valuesMinCount
+
+}
+
+class AtlasBaseModelObject{
+
+    [String]$guid
+
+}
+
+class LastModifiedTS{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class TypeCategory{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class TermTemplateDef : AtlasStructDef {
+
+    #JSON Wrapper of AtlasStructDef
+
+}
+
+class AtlasEntityDef : AtlasStructDef {
+
+    [String[]]$subTypes
+    [String[]]$superTypes
+
+
+}
+
+class Cardinality{
+  # Not Required, this is a String Enum
+}
+
+class AtlasStruct{
+
+    [Object]$attributes
+    [String]$typeName
+    [String]$lastModifiedTS
+
+}
+
+class Status{
+    
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasEntityHeader : AtlasStruct{
+
+    [String[]]$classificationNames
+    [AtlasClassification[]]$classifications
+    [String]$displayText
+    [String]$guid
+    [String[]]$meaningNames
+    [AtlasTermAssignmentHeader[]]$meanings
+    [String]$status
+}
+
+class AtlasEntityHeaders {
+
+    [Object]$guidHeaderMap
+
+}
+
+class AtlasClassification : AtlasStruct{
+
+    [String]$entityGuid
+    [String]$entityStatus
+    [bool]$propagate
+    [bool]$removePropagationsOnEntityDelete
+    [TimeBoundary[]]$validityPeriods
+    [String]$source
+    [Object]$sourceDetails
+
+}
+
+
+
+class AtlasClassificationDef : AtlasStructDef{
+
+    [String[]]$entityTypes
+    [String[]]$subTypes
+    [String[]]$superTypes
+
+}
+
+class AtlasEntityExtInfo{
+
+    [Object]$referredEntities
+
+}
+
+class AtlasEntity : AtlasStruct {
+
+    [AtlasClassifications]$classifications
+    [int]$createTime
+    [String]$createdBy
+    [String]$guid
+    [String]$homeId
+    [AtlasTermAssignmentHeader[]]$meanings
+    [int]$provenanceType
+    [bool]$proxy
+    [Object]$relationshipAttributes
+    [String]$status
+    [int]$updateTime
+    [int]$updatedBy
+    [int]$version
+    [String]$source
+    [Object]$sourceDetails
+    [Object]$contacts
+
+}
+
+class AtlasEnumDef : AtlasBaseTypeDef{
+
+    [String]$defaultValue
+    [AtlasEnumElementDef[]]$elementDefs
+
+
+}
+
+class AtlasEnumElementDef{
+
+    [String]$description
+    [int]$ordinal
+    [String]$value
+
+}
+
+class AtlasEntityWithExtInfo : AtlasEntityExtInfo{
+
+    [AtlasEntity]$entity
+
+}
+
+class AtlasTermAssignmentStatus{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasTermAssignmentHeader{
+
+    [int]$confidence
+    [String]$createdBy
+    [String]$description
+    [String]$displayText
+    [String]$expression
+    [String]$relationGuid
+    [String]$source
+    [String]$status
+    [String]$steward
+    [String]$termGuid
+    
+
+}
+
+class AtlasGlossaryBaseObject : AtlasBaseModelObject{
+
+    [AtlasClassification[]]$classifications
+    [String]$longDescription
+    [String]$name
+    [String]$qualifiedName
+    [String]$shortDescription
+    [String]$lastModifiedTS
+
+}
+
+class AtlasGlossary : AtlasGlossaryBaseObject{
+
+ [AtlasRelatedCategoryHeader]$categories
+ [String]$language
+ [AtlasRelatedTermHeader[]]$terms
+ [String]$usage
+
+}
+
+class AtlasRelatedCategoryHeader{
+
+    [String]$categoryGuid
+    [String]$description
+    [String]$displayText
+    [String]$parentCategoryGuid
+    [String]$relationGuid
+
+}
+
+class AtlasTermRelationshipStatus{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelatedTermHeader{
+
+    [String]$description
+    [String]$displayText
+    [String]$expression
+    [String]$relationGuid
+    [String]$source
+    [String]$status
+    [String]$steward
+    [String]$termGuid
+
+}
+
+class AtlasEntitiesWithExtInfo : AtlasEntityExtInfo{
+
+    [AtlasEntity[]]$entities
+
+}
+
+class TimeBoundary{
+
+    [String]$endTime
+    [String]$startTime
+    [String]$timeZone
+
+}
+
+class PList{
+
+    [Object[]]$list
+    [int]$pageSize
+    [String]$sortBy
+    [String]$sortType
+    [int64]$startIndex
+    [int64]$totalCount
+}
+
+class AtlasClassifications : PList {
+
+    #JSON WRAPPER FOR PList, MAT NOT BE REQUIRED
+
+}
+
+class SortType {
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+
+
+class DateFormat{
+
+    [String[]]$availableLocales
+    [DateFormat]$dateInstance
+    [DateFormat]$dateTimeInstance
+    [DateFormat]$instance
+    [bool]$lenient
+    [NumberFormat]$numberFormat
+    [DateFormat]$timeInstance
+    [AtlasTimeZone]$timeZone
+
+}
+
+class AtlasTimeZone{
+
+    [int]$DSTSavings
+    [String]$ID
+    [String[]]$availableIDs
+    [AtlasTimeZone]$default
+    [String]$displayName
+    [int]$rawOffset
+
+}
+
+class NumberFormat{
+
+    [string[]]$availableLocales
+    [string]$currency
+    [NumberFormat]$currencyInstance
+    [bool]$groupingUsed
+    [NumberFormat]$instance
+    [NumberFormat]$integerInstance
+    [int]$maximumFractionDigits
+    [int]$maximumIntegerDigits
+    [int]$minimumFractionDigits
+    [int]$minimumIntegerDigits
+    [NumberFormat]$numberInstance
+    [bool]$parseIntegerOnly
+    [NumberFormat]$percentInstance
+    [String]$roundingMode
+
+
+}
+
+class RoundingMode{
+    
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasConstraintDef{
+
+    [Object]$params
+    [String]$type
+
+}
+
+class AtlasFullTextResult{
+    #Todo: Implement
+}
+
+class AtlasQueryType{
+    #Todo: Implement
+}
+
+class SuggestRequest{
+
+    [String]$keywords
+    [int]$Limit
+    [Object]$Filter
+
+}
+
+class SearchRequest {
+
+      [String]$keywords
+      [int]$Offset
+      [int]$Limit
+      [Object]$Filter
+
+}
+
+
+class AtlasGlossaryCategory : AtlasGlossaryBaseObject{
+
+    [AtlasGlossaryHeader]$anchor
+    [AtlasRelatedCategoryHeader[]]$childrenCategories
+    [AtlasRelatedCategoryHeader]$parentCategory
+    [AtlasRelatedTermHeader[]]$terms
+
+}
+
+class AtlasGlossaryHeader{
+
+    [String]$displayText
+    [String]$glossaryGuid
+    [String]$relationGuid
+
+}
+
+class AtlasGlossaryExtInfo : AtlasGlossary{
+
+    [Object]$categoryInfo
+    [Object]$termInfo
+
+}
+
+class TermStatus{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasGlossaryTerm{
+
+    [String]$abbreviation
+    [AtlasGlossaryHeader]$anchor
+    [AtlasRelatedTermHeader[]]$antonyms
+    [int]$createTime
+    [String]$createdBy
+    [int]$updateTime
+    [String]$updatedBy
+    [String]$status
+    [ResourceLink []]$resources
+    [Object]$contacts
+    [System.Collections.Generic.Dictionary[[String], [System.Collections.Generic.Dictionary[[String],[Object]]] ]]$attributes    #map<string,map<string,object>>
+    [AtlasRelatedObjectId[]]$assignedEntities
+    [AtlasTermCategorizationHeader]$categories
+    [AtlasRelatedTermHeader ]$classifies
+    [String[]]$examples
+    [AtlasRelatedTermHeader[]]$isA
+    [AtlasRelatedTermHeader[]]$preferredTerms
+    [AtlasRelatedTermHeader[]]$preferredToTerms
+    [AtlasRelatedTermHeader[]]$replacedBy
+    [AtlasRelatedTermHeader[]]$replacementTerms
+    [AtlasRelatedTermHeader[]]$seeAlso
+    [AtlasRelatedTermHeader[]]$synonyms
+    [AtlasRelatedTermHeader[]]$translatedTerms
+    [AtlasRelatedTermHeader[]]$translationTerms
+    [String]$usage
+    [AtlasRelatedTermHeader[]]$validValues
+    [AtlasRelatedTermHeader[]]$validValuesFor
+    
+    
+}
+
+class AtlasTermCategorizationHeader{
+
+    [String]$categoryGuid
+    [String]$description
+    [String]$displayText
+    [String]$relationGuid
+    [String]$status
+
+}
+
+class Status_AtlasRelationship{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasObjectId{
+
+    [String]$guid
+    [String]$typeName
+    [Object]$uniqueAttributes
+
+}
+
+class AtlasRelatedObjectId : AtlasObjectId{
+
+    [String]$displayText
+    [String]$entityStatus
+    [AtlasStruct]$relationshipAttributes
+    [String]$relationshipGuid
+    [String]$relationshipStatus
+
+}
+
+
+
+class ResourceLink {
+
+    [String]$displayName
+    [String]$url
+
+}
+
+class ContactBasic{
+
+    [String]$id
+    [String]$info
+
+}
+
+class AtlasLineageInfo{
+
+    [String]$baseEntityGuid
+    [Object]$guidEntityMap
+    [Object]$widthCounts
+    [int]$lineageDepth
+    [int]$lineageWidth
+    [bool]$includeParent
+    [int]$childrenCount
+    [String]$lineageDirection
+    [ParentRelation[]]$parentRelations
+    [LineageRelation[]]$relations
+
+}
+
+class LineageRelation{
+
+    [String]$fromEntityId
+    [String]$relationshipId
+    [String]$toEntityId
+
+}
+
+class ParentRelation{
+
+    [String]$childEntityId
+    [String]$relationshipId
+    [String]$parentEntityId
+
+}
+
+class LineageDirection{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelationship : AtlasStruct {
+
+    [AtlasClassification[]]$blockedPropagatedClassifications
+    [int]$createTime
+    [String]$createdBy
+    [AtlasObjectID]$end1
+    [AtlasObjectID]$end2
+    [String]$guid
+    [String]$homeId
+    [String]$label
+    [String]$propagateTags
+    [AtlasClassification[]]$propagatedClassifications
+    [int]$provenanceType
+    [String]$status
+    [int]$updateTime
+    [String]$updatedBy
+    [int]$version
+
+}
+
+class PropagateTags{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelationshipDef : AtlasStructDef{
+
+    [AtlasRelationshipEndDef]$endDef1
+    [AtlasRelationshipEndDef]$endDef2
+    [PropagateTags]$propagateTags
+    [String]$relationshipCategory
+    [String]$relationshipLabel
+
+}
+
+class AtlasRelationshipEndDef{
+
+    [String]$cardinality
+    [String]$description
+    [bool]$isContainer
+    [bool]$isLegacyAttribute
+    [String]$name
+    [String]$type
+
+}
+
+class RelationshipCategory{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class AtlasRelationshipWithExtInfo{
+
+    [Object]$referredEntities
+    [AtlasRelationship]$relationship
+
+}
+
+class AtlasTypeDefHeader {
+
+    [String]$category
+    [String]$guid
+    [String]$name
+
+}
+
+class AtlasTypesDef{
+
+    [AtlasClassificationDef []]$classificationDefs
+    [AtlasEntityDef []]$entityDefs
+    [AtlasEnumDef []]$enumDefs
+    [AtlasRelationshipDef []]$relationshipDefs
+    [AtlasStructDef []]$structDefs
+
+}
+
+class TypeStatistics{
+
+    [Object]$typeStatistics
+
+}
+
+class AtlasUserSavedSearch{
+
+    [String]$name
+    [String]$ownerName
+    [SearchParameters]$searchParameters
+    [String]$searchType
+    [String]$uiParameters
+
+}
+
+class SavedSearchType{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class SearchParameters{
+
+    [string[]]$attributes
+    [string]$classification
+    [FilterCriteria]$entityFilters
+    [bool]$excludeDeletedEntities
+    [bool]$includeClassificationAttributes
+    [bool]$includeSubClassifications
+    [bool]$includeSubTypes
+    [int]$limit
+    [int]$offset
+    [String]$query
+    [FilterCriteria]$tagFilters
+    [string]$termName
+    [string]$typeName
+
+}
+
+class FilterCriteria{
+
+    [string]$attributeName
+    [string]$attributeValue
+    [String]$condition
+    [FilterCriteria]$criterion
+    [String]$operator
+
+
+}
+
+class Condition{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+class Operator{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+class Format{  
+    #NOT REQUIRED AS STRING ENUM
+}
+
+class ClassificationAssociateRequest{
+
+    [AtlasClassification]$classification
+    [String[]]$entityGuids 
+
+}
+
+class EntityAuditActionV2{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class EntityAuditEventV2{
+
+    [string]$action
+    [string]$details
+    [AtlasEntity]$entity
+    [string]$entityId
+    [string]$eventKey
+    [int]$timeStamp
+    [EntityAuditType]$type
+    [string]$user
+   
+
+}
+
+class EntityAuditType{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class EntityMutationResponse{
+
+    [Object]$guidAssignments
+    [Object]$mutatedEntities
+    [AtlasEntityHeader[]]$partialUpdatedEntities
+
+}
+
+
+class EntityOperation{
+
+    #NOT REQUIRED AS string ENUM
+
+}
+
+class TermGuid{
+
+    ##Standalone string ?? The globally unique identifier for glossary term.
+
+}
+
+class Relation{
+
+    #NOT REQUIRED AS STRING ENUM
+
+}
+
+class SearchFilter{
+    [bool]$getCount
+    [int]$maxRows
+    [object]$params
+    [string]$sortBy
+    [string]$sortType
+    [int]$startIndex
+}
+
+class TimeZone{
+    [int]$DSTSavings
+    [String]$ID
+    [String[]]$availableIDs
+    [TimeZone]$default
+    [String]$displayName
+    [int]$rawOffset
+}
+
+class AzureCatalogUser{
+    [String]$userId
+}
+
+class CatalogCreationRequest{
+
+    [String]$catalogName
+    [String]$catalogId
+    [String]$creatorUserId
+    [String]$eventHubConnectionString
+}
+
+class CatalogDeletionRequest{
+
+    [String]$catalogName
+
+}
+
+class DataScanPermissionCheckRequest{
+
+    [String]$catalogName
+    [String]$userId
+
+}
+
+class DataScanPermissionCheckResponse{
+    [String]$result
+
+}
+
+
+class SuggestResult{
+    [SuggestResultValue[]]$value
+}
+
+class SuggestResultValue{
+
+    [Float]${@search.Score}
+    [String]${@search.Text}
+    [String]$description
+    [String]$id
+    [String]$name
+    [String]$owner
+    [String]$qualifiedName
+    [String]$entityType
+    [String[]]$classification
+    [String[]]$label
+    [termSearchResultValue[]]$term
+    [contactSearchResultValue[]]$contact
+    [String[]]$assetType
+
+}
+
+class termSearchResultValue{
+    [String]$name
+    [String]$glossaryName
+}
+
+class contactSearchResultValue{
+    
+    [String]$id
+    [String]$info
+    [String]$contactType
+
+}
+
+class AdvancedSearchResult{
+
+    [int32]${@search.Count}
+
+    [SearchFacetResultValue]${@search.Facets}
+
+    [SearchResultValue[]]$value
+
+}
+
+class SearchFacetResultValue{
+
+    [SearchFacetItemValue []]$assetType
+    [SearchFacetItemValue []]$classification
+    [SearchFacetItemValue []]$classificationCategory
+    [SearchFacetItemValue []]$contactId
+    [SearchFacetItemValue []]$fileExtension
+    [SearchFacetItemValue []]$label
+    [SearchFacetItemValue []]$term
+    
+
+}
+
+class SearchFacetItemValue{
+    [int]$count
+    [String]$value
+
+}
+
+class SearchResultValue{
+
+
+    [Float]${@search.Score}
+    [SearchHighlights]${@search.highlights}
+    [String]$searchText
+    [String]$description
+    [String]$id
+    [String]$name
+    [String]$owner
+    [String]$qualifiedName
+    [String]$entityType
+    [String[]]$classification
+    [String[]]$label
+    [termSearchResultValue[]]$term
+    [contactSearchResultValue[]]$contact
+    [String[]]$assetType
+
+}
+
+class SearchHighlights{
+
+    [String[]]$id
+    [String[]]$qualifiedName
+    [String[]]$name
+    [String[]]$description
+    [String[]]$entityType
+
+}
+
+class AutocompleteResult{
+
+[AutocompleteResultValue[]]$value
+
+}
+
+class AutocompleteResultValue{
+
+    [String]$text
+    [String]$queryPlusText
+
+}
+
+class Context{
+
+    [String]$value
+
+}
+
+class Error{
+
+    [String]$errorMessage
+}
+
+class AtlasError {
+
+    [String]$errorCode
+    [String]$errorMessage
+
+}
+
+class HookNotificationType{
+
+    #NOT USED, STRING ENUM
+
+}
+
+class HookNotification{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+
+}
+
+class EntityCreateRequestV2{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasEntitiesWithExtInfo]$entities
+
+}
+
+class EntityUpdateRequestV2{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasEntitiesWithExtInfo]$entities
+
+
+}
+
+class EntityPartialUpdateRequestV2{
+
+  [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasObjectId]$entityId
+    [AtlasEntitiesWithExtInfo]$entities
+
+}
+
+class EntityDeleteRequestV2{
+
+    [String]$type
+    [String]$user = "UNKNOWN"
+    [AtlasObjectId []]$entities
+
+}
+
+class RoleAssignmentEntry {
+
+    [String]$principalId
+    [String]$role
+
+}
+
+class UpdateRoleAssignmentRequest{
+
+    [RoleAssignmentEntry[]]$roleAssignmentList
+
+}
+
+class ListRoleAssignmentResponse{
+
+    [RoleAssignmentEntry[]]$roleAssignmentList
+
+}
+
+
+class ImportCSVOperation{
+
+
+    [String]$id
+    [String]$status
+    [int]$createTime
+    [int]$lastUpdateTime
+    [ImportCSVOperationProperties]$properties
+    [ImportCSVOperationError]$error
+
+}
+
+class ImportCSVOperationProperties{
+
+    [int]$importedTerms
+    [int]$totalTermsDetect
+
+}
+
+class ImportCSVOperationError{
+
+    [int]$errorCode
+    [String]$errorMessage
+
+}
+
+class ImportCSVOperationStatus{
+
+#NOT NEEDED STRING ENUM
+
+}
+
+
+#endregion
+
+
 
 function New-PurviewClient {
 
@@ -1489,6 +2507,8 @@ function Set-Glossary{
     
     )
 
+    $FunctionType = $PSCmdlet.ParameterSetName
+
     Switch ($FunctionType)
         {
             "Glossary" {
@@ -1524,9 +2544,10 @@ function Set-Glossary{
 
 #endregion
 
+#region Search/Discovery API
 
-#region Search API
 
+##ATLAS FUNCTION NOT SUPPORTED IN PURVIEW
 function Search-Attribute {
 
     Param(
@@ -1562,63 +2583,141 @@ function Search-Attribute {
     $client.MakeRequest("search/attribute?", $false, $client.Get , "v2")
 
 }
+
+##ATLAS FUNCTION NOT SUPPORTED IN PURVIEW
 function Search-Basic {
 
-    Param()
+    Param(
+    
+    [String]$Classification,
 
-    Return "Placeholder, not implemented"
+    [bool]$ExcludeDeletedEntities=$false,
+
+    [int]$Limit,
+
+    [int]$Offset,
+
+    [String]$Query,
+
+    [String]$SortBy,
+
+    [Switch]$Ascending,
+
+    [Switch]$Descending,
+
+    [Parameter(Mandatory=$true)]
+    [String]$TypeName,
+
+    [Parameter(Mandatory=$true)]
+    [Client]$Client
+    
+    
+    )
+
+    $URI = "search/basic?typeName=$($TypeName)&query=$($Query)"
+
+    if($Classification){
+        $URI += "&classification=$($Classification)"
+    }
+
+    if($ExcludeDeletedEntities){
+        $URI += "&excludedDeletedEntities=$($ExcludeDeletedEntities)"
+    }
+
+    
+    if($Limit -AND $Limit -gt 0){
+        $URI += "&limit=$($Limit)"
+    }
+
+    if($Offset -AND $Offset -gt 0){
+        $URI += "&offset=$($Offset)"
+    }
+
+    if($SortBy){
+        $URI += "&sortBy=$($SortBy)"
+    }
+
+    if($Descending){
+        $URI += "&sortOrder=DESCENDING"
+    }
+
+    if($Ascending){
+        $URI += "&sortOrder=ASCENDING"
+    }
+
+
+    $client.MakeRequest($URI, $false, $client.Get, "v2")
 
 }
-function Search-DSL {
 
 
-    Param()
-
-    Return "Placeholder, not implemented"
-
-}
-function Search-FullText {
+function New-Search{
 
 
-    Param()
+    Param(
+    
+        [parameter(ParameterSetName = "SearchRequest")]
+        [SearchRequest]$SearchRequest,
 
-    Return "Placeholder, not implemented"
-
-}
-function Search-Quick {
-
-
-    Param()
-
-    Return "Placeholder, not implemented"
-
-}
-function Search-Relationship {
+        [parameter(ParameterSetName = "SuggestRequest")]
+        [SuggestRequest]$SuggestRequest,
 
 
-    Param()
+        [parameter(ParameterSetName = "AutoCompleteRequest")]
+        [AutoCompleteRequest]$AutoCompleteRequest,
 
-    Return "Placeholder, not implemented"
+        [parameter(ParameterSetName = "SearchRequest",Mandatory=$true)]
+        [parameter(ParameterSetName = "SuggestRequest",Mandatory=$true)]
+        [parameter(ParameterSetName = "AutoCompleteRequest",Mandatory=$true)]
+        [Client]$Client
+    
+    )
 
-}
-function Search-Suggestion {
+      $FunctionType = $PSCmdlet.ParameterSetName
 
+      switch($FunctionType){
 
-    Param()
+          "SearchRequest"{
+      
+                $response = $Client.MakeRequest("search/advanced", (ConvertTo-Json $SearchRequest) , $Client.POST, "v2")
+                $result = [AdvancedSearchResult]$response 
 
-    Return "Placeholder, not implemented"
+          }
+          "SuggestRequest"{
+      
+        
+                $response = $Client.MakeRequest("search/suggest", (ConvertTo-Json $SuggestRequest) , $Client.POST, "v2")
+                $result = [SuggestResult]$response
+      
+          }
+          "AutoCompleteRequest"{
+      
+            $URI = "search/autocomplete?"
+            if($AutoCompleteRequest){
 
-}
-function Search-Save{
+                if($AutoCompleteRequest.keyword){
+                    $URI +=  "&keyword='$($AutoCompleteRequest.keyword)'"
+                }else{
+                    throw "AutoComplete Keyword is required."
+                }
 
+                if($AutoCompleteRequest.limit -gt 0){
+                    $URI +=  "&limit=$($AutoCompleteRequest.limit)"
+                }
 
-    Param()
+            }
 
-    Return "Placeholder, not implemented"
+            $response = $Client.MakeRequest($URI, $false , $Client.GET, "v2")
+            $result = [AutocompleteResult]$response
+          }
+
+      }
+
+    Return $result
 
 }
 
 #endregion
 
-Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity, Search-Attribute
+Export-ModuleMember -Function New-PurviewClient, Get-Entity, Get-TypeDefs, Remove-TypeDefs, Add-TypeDefs, Set-TypeDefs, Get-Relationship, Remove-Relationship, Add-Relationship, Set-Relationship, Get-Glossary, Get-Lineage, Remove-Glossary, Add-Glossary, Set-Glossary, Add-Entity, Remove-Entity, Set-Entity, New-Search
 
