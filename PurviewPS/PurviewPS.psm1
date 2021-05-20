@@ -2680,7 +2680,7 @@ function New-Search{
       "SearchRequest"{
       
             $response = $Client.MakeRequest("search/advanced", (ConvertTo-Json $SearchRequest) , $Client.POST, "v2")
-            $result = [AdvancedSearchResult] ($response | ConvertFrom-Json)
+            $result = [AdvancedSearchResult]$response 
 
       }
       "SuggestRequest"{}
