@@ -204,22 +204,22 @@ Supporting all the API URI's available for api/atlas/v2/glossary/* for the GET D
 `New-Search` 
 Provides simplified access to all the atlas search endpoints.
  #### Advanced Search example:
-`$searchRequest  = [SearchRequest]::new() `
-`$searchRequest.keywords  =  "fact"`
-`$searchResult  =  New-Search  -Client  $client -SearchRequest $searchRequest`
+`$searchRequest  = [SearchRequest]::new() `  
+`$searchRequest.keywords  =  "fact"`  
+`$searchResult  =  New-Search  -Client  $client -SearchRequest $searchRequest`  
 
   
 
 #### Suggest Search example:
-`$suggestRequest  = [SuggestRequest]::new()`
-`$suggestRequest.keywords  =  "dim"`
-`$suggestResult  =  New-Search  -Client  $client -SuggestRequest $suggestRequest`
+`$suggestRequest  = [SuggestRequest]::new()`  
+`$suggestRequest.keywords  =  "dim"`  
+`$suggestResult  =  New-Search  -Client  $client -SuggestRequest $suggestRequest`  
 
 #### Autocomplete Search example:
-`$autocompleteRequest  = [AutoCompleteRequest]::new()`
-`$autocompleteRequest.keyword  =  "applic"`
-`$autocompleteRequest.limit  =  25`
-`$autocompleteResult  =  New-Search  -Client  $client -Autocomplete $autocompleteRequest`
+`$autocompleteRequest  = [AutoCompleteRequest]::new()`  
+`$autocompleteRequest.keyword  =  "applic"`  
+`$autocompleteRequest.limit  =  25`  
+`$autocompleteResult  =  New-Search  -Client  $client -Autocomplete $autocompleteRequest`  
   
 
 To Do:
